@@ -1,7 +1,7 @@
 # HealthyBot
 
 Backend-сервис для отслеживания здоровых привычек. 
-Версия 0.3 - консольная версия + FastAPI
+Версия 0.4 - консольный клиент + REST API на FastAPI с PostgreSQL
 
 ## О проекте
 
@@ -27,6 +27,17 @@ python -m app.main
 ```
 
 - API сервер
+Требуется установленный PostgreSQL 14+
+1. Создай БД `healthybot` в PostgreSQL.
+2. Создай файл `.env` в корне проекта: 
+```bash
+DATABASE_URL=postgresql+psycopg://USER:PASSWORD@localhost:5432/healthybot
+```
+3. Создай таблицы:
+```bash
+python -m create_tables
+```
+4. Запусти сервер:
 ```bash
 uvicorn app.api:app --reload
 ```
@@ -45,22 +56,27 @@ uvicorn app.api:app --reload
 - Запись настроения с заметками
 - Просмотр общей статистики по дневнику
 
-### API (v0.3)
+### API (v0.4)
 
 - GET / статус
 - POST /foods  создать продукт
 - GET /foods список
 - GET /foods/{id} продукт по id
 
+**Данные хранятся в PostgreSQL** и сохраняются между перезапусками сервера.
+
 ## Стек
 
 - Python
 - FastAPI + uvicorn
 - Pydantic (валидация)
+- PostgreSQL + SQLAlchemy (ORM)
 
 ## План развития
 - v0.1 - первая консольная версия [x]
 - v0.2 - рефакторинг, разбиение на модули [x]
 - v0.3 - FastAPI + CRUD для продуктов [x]
+- v0.3.1 - подключение PostgreSQL (SQLAlchemy, ORM-модель Food) [x]
+- v0.4 - API переведён с in-memory на БД [x]
 - ...
 - К v1.0 - полноценный Telegram-бот с backend'ом на FastAPI, базой PostgreSQL и кэшированием через Redis. Список технологий и их обоснование появятся в README по мере добавления.

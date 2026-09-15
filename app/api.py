@@ -1,10 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-from fastapi import HTTPException
-from app.models import Food
-
-food_bd={}
-next_id=1
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.db_models import FoodModel
 
 app=FastAPI()
 
@@ -27,42 +25,41 @@ class FoodResponse(BaseModel):
     fat: float
     carbs: float
 
-def food_create_to_food(shema: FoodCreate) -> Food:
-    return Food(
+def food_create_to_food(shema: FoodCreate) -> FoodModel:
+    return FoodModel(
         name=shema.name,
-        cals=shema.calories,
-        prot=shema.protein,
+        calories=shema.calories,
+        protein=shema.protein,
         fat=shema.fat,
         carbs=shema.carbs
-    )
+    ) #тк pydantic нельзя положить в бд
 
-def food_to_response(food_id: int, food: Food) -> FoodResponse:
+def food_to_response(food: FoodModel) -> FoodResponse:
     return FoodResponse(
-        id=food_id,
+        id=food.id,
         name=food.name,
-        calories=food.cals,
-        protein=food.prot,
+        calories=food.calories,
+        protein=food.protein,
         fat=food.fat,
         carbs=food.carbs
     )
 
 @app.post("/foods")
-def create_food(food: FoodCreate):
-    global next_id
+def create_food(food: FoodCreate, db: Session=Depends(get_db)):
     new_food=food_create_to_food(food)
-    food_bd[next_id]=new_food    
-    new_id=next_id
-    next_id+=1
-    return food_to_response(new_id, new_food)
+    db.add(new_food)
+    db.commit()
+    db.refresh(new_food)
+    return food_to_response(new_food)
 
 @app.get("/foods")
-def list_foods():
-    return {"foods": [food_to_response(fid, f) for fid, f in food_bd.items()]}
+def list_foods(db: Session=Depends(get_db)):
+    foods=db.query(FoodModel).all()
+    return {"foods": [food_to_response(f) for f in foods]}
 
 @app.get("/foods/{food_id}")
-def get_food(food_id: int):
-    if food_id in food_bd:
-        food=food_bd[food_id]
-        return food_to_response(food_id, food)
-    else:
+def get_food(food_id: int, db:Session=Depends(get_db)):
+    food=db.get(FoodModel, food_id)
+    if food is None:
         raise HTTPException(status_code=404, detail="Food not found")
+    return food_to_response(food)
