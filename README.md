@@ -1,7 +1,7 @@
 # HealthyBot
 
 Backend-сервис для отслеживания здоровых привычек. 
-Версия 0.4 - консольный клиент + REST API на FastAPI с PostgreSQL
+Версия 0.4.1 - консольный клиент + REST API на FastAPI с PostgreSQL
 
 ## О проекте
 
@@ -37,7 +37,11 @@ DATABASE_URL=postgresql+psycopg://USER:PASSWORD@localhost:5432/healthybot
 ```bash
 python -m create_tables
 ```
-4. Запусти сервер:
+4. Примени миграции (создаст служебную таблицу alembic_version):
+```bash
+alembic upgrade head
+```
+5. Запусти сервер:
 ```bash
 uvicorn app.api:app --reload
 ```
@@ -71,12 +75,14 @@ uvicorn app.api:app --reload
 - FastAPI + uvicorn
 - Pydantic (валидация)
 - PostgreSQL + SQLAlchemy (ORM)
+- Alembic (миграции БД)
 
 ## План развития
-- v0.1 - первая консольная версия [x]
-- v0.2 - рефакторинг, разбиение на модули [x]
-- v0.3 - FastAPI + CRUD для продуктов [x]
-- v0.3.1 - подключение PostgreSQL (SQLAlchemy, ORM-модель Food) [x]
-- v0.4 - API переведён с in-memory на БД [x]
+- [x] v0.1 - первая консольная версия
+- [x] v0.2 - рефакторинг, разбиение на модули
+- [x] v0.3 - FastAPI + CRUD для продуктов
+- [x] v0.3.1 - подключение PostgreSQL (SQLAlchemy, ORM-модель Food)
+- [x] v0.4 - API переведён с in-memory на БД
+- [x] v0.4.1 — Alembic: миграции схемы БД
 - ...
 - К v1.0 - полноценный Telegram-бот с backend'ом на FastAPI, базой PostgreSQL и кэшированием через Redis. Список технологий и их обоснование появятся в README по мере добавления.
