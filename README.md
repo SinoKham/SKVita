@@ -83,6 +83,7 @@ uvicorn app.api:app --reload
 - [x] v0.3 - FastAPI + CRUD для продуктов
 - [x] v0.3.1 - подключение PostgreSQL (SQLAlchemy, ORM-модель Food)
 - [x] v0.4 - API переведён с in-memory на БД
-- [x] v0.4.1 — Alembic: миграции схемы БД
+- [x] v0.4.1 - Alembic: миграции схемы БД
+- [x] v0.4.2 - все сущности БД, связи
 - ...
 - К v1.0 - полноценный Telegram-бот с backend'ом на FastAPI, базой PostgreSQL и кэшированием через Redis. Список технологий и их обоснование появятся в README по мере добавления.
